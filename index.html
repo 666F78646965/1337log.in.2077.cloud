@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="🫆">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🫆1337log.in</title>
+    <style>
+        :root {
+            --cyan-bright: #00ffff;
+            --cyan-glow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            --background: #121212;
+            --surface: #1a1a1a;
+            --phone-border: #333;
+        }
+
+        body.surface {
+            background-color: var(--background);
+            color: #ccc;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .phone-frame {
+            width: 320px;
+            height: 600px;
+            background-color: #000;
+            border-radius: 20px;
+            border: 2px solid var(--phone-border);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 40px;
+            background-color: #0d0d0d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: var(--cyan-bright);
+            text-shadow: var(--cyan-glow);
+            z-index: 20;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 5px;
+        }
+        .status-icon {
+            width: 14px;
+            height: 10px;
+            display: inline-block;
+            background-color: var(--cyan-bright);
+            box-shadow: var(--cyan-glow);
+        }
+        .wifi { border-radius: 50% 50% 0 0; }
+        .signal { background-color: var(--cyan-bright); }
+        .battery { width: 22px; height: 12px; }
+
+        .status-center {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+        }
+        .code-text { font-size: 10px; color: var(--cyan-bright); }
+        .finger-icon { font-size: 14px; color: var(--cyan-bright); margin: 0 5px; }
+
+        .menu-burger {
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            width: 25px;
+            height: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 30;
+            cursor: pointer;
+        }
+        .burger-line {
+            width: 100%;
+            height: 2px;
+            background-color: var(--cyan-bright);
+            box-shadow: var(--cyan-glow);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .menu-burger.active .line1 { transform: translateY(8px) rotate(45deg); }
+        .menu-burger.active .line2 { opacity: 0; }
+        .menu-burger.active .line3 { transform: translateY(-8px) rotate(-45deg); }
+
+        .menu-overlay {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 40px);
+            background-color: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 22px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .menu-item {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+            letter-spacing: 1.5px;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .menu-item:hover {
+            color: var(--cyan-bright);
+            text-shadow: var(--cyan-glow);
+        }
+
+        .genie-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        #genieCanvas {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(var(--cyan-glow));
+            touch-action: none;
+        }
+
+        .code-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            color: var(--cyan-bright);
+            font-size: 10px;
+            text-shadow: var(--cyan-glow);
+            opacity: 0.7;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .code-block { display: block; margin-bottom: 5px; animation: flicker 3s infinite; }
+
+        @keyframes flicker {
+            0% { opacity: 0.7; }
+            5% { opacity: 1; }
+            10% { opacity: 0.7; }
+            100% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="surface">
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <header class="status-bar">
+                <div class="status-left">
+                    <span class="status-icon signal"></span>
+                    <span class="status-icon wifi"></span>
+                </div>
+                <div class="status-center">
+                    <span class="code-text">&lt;html lang="</span>
+                    <span class="finger-icon">𫳆</span>
+                    <span class="code-text">1337log.in</span>
+                </div>
+                <div class="status-right">
+                    <span class="status-icon battery"></span>
+                </div>
+            </header>
+            
+            <div class="menu-burger" id="burgerBtn">
+                <div class="burger-line line1"></div>
+                <div class="burger-line line2"></div>
+                <div class="burger-line line3"></div>
+            </div>
+
+            <nav class="menu-overlay" id="menuNav">
+                <a href="https://1337.army" target="_blank" class="menu-item">1337.army</a>
+                <a href="https://1337.exchange" target="_blank" class="menu-item">1337.exchange</a>
+                <a href="https://1337.nexus" target="_blank" class="menu-item">1337.nexus</a>
+                <a href="https://1337.vision" target="_blank" class="menu-item">1337.vision</a>
+                <a href="https://1337.xxx" target="_blank" class="menu-item">1337.xxx</a>
+                <a href="https://2077.cloud" target="_blank" class="menu-item">2077.cloud</a>
+                <a href="https://dreb.in" target="_blank" class="menu-item">dreb.in</a>
+            </nav>
+
+            <div class="genie-container">
+                <canvas id="genieCanvas"></canvas>
+            </div>
+            
+            <div class="code-overlay">
+                <span class="code-block block1">&lt;html lang="𫳆"&gt;</span>
+                <span class="code-block block2">&lt;div class="f"&gt;</span>
+                <span class="code-block block3">&lt;h1&gt;1337log&lt;/h1&gt;</span>
+                <span class="code-block block4">...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const burgerBtn = document.getElementById('burgerBtn');
+        const menuNav = document.getElementById('menuNav');
+
+        burgerBtn.addEventListener('click', () => {
+            burgerBtn.classList.toggle('active');
+            menuNav.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.menu-item').forEach(link => {
+            link.addEventListener('click', () => {
+                burgerBtn.classList.remove('active');
+                menuNav.classList.remove('open');
+            });
+        });
+
+        const canvas = document.getElementById('genieCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, time = 0;
+
+        const pointer = {
+            x: -1000,
+            y: -1000,
+            cx: -1000,
+            cy: -1000,
+            force: 0,
+            targetForce: 0
+        };
+
+        function resize() {
+            width = canvas.width = canvas.parentElement.clientWidth;
+            height = canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function updatePointer(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            pointer.targetForce = 1;
+            
+            if (e.touches && e.touches.length > 0) {
+                pointer.x = e.touches[0].clientX - rect.left;
+                pointer.y = e.touches[0].clientY - rect.top;
+            } else {
+                pointer.x = e.clientX - rect.left;
+                pointer.y = e.clientY - rect.top;
+            }
+        }
+
+        function releasePointer() {
+            pointer.targetForce = 0;
+        }
+
+        canvas.addEventListener('mousemove', updatePointer);
+        canvas.addEventListener('touchmove', updatePointer, { passive: false });
+        canvas.addEventListener('mousedown', updatePointer);
+        canvas.addEventListener('touchstart', updatePointer, { passive: false });
+        window.addEventListener('mouseup', releasePointer);
+        window.addEventListener('touchend', releasePointer);
+
+        function getDropletWidth(t) {
+            if (t < 0 || t > 1) return 0;
+            return Math.sin(t * Math.PI) * (1.3 - t * 1.0);
+        }
+
+        function drawFingerprint() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.strokeStyle = '#00FFFF';
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            pointer.cx += (pointer.x - pointer.cx) * 0.15;
+            pointer.cy += (pointer.y - pointer.cy) * 0.15;
+            pointer.force += (pointer.targetForce - pointer.force) * 0.1;
+
+            const centerX = width / 2;
+            const dropletHeight = height * 0.55;
+            const maxDropletWidth = width * 0.42;
+            const startY = (height / 2) - (dropletHeight / 2); 
+            
+            const numRidges = 32;
+
+            for (let i = 1; i <= numRidges; i++) {
+                const u = i / numRidges; 
+                ctx.beginPath();
+                
+                for (let t = 0; t <= 1; t += 0.02) {
+                    const baseW = getDropletWidth(t) * maxDropletWidth * u;
+                    const ridgeRipple = Math.sin(t * 60 + u * 12) * 1.5;
+                    const waveX = Math.sin(t * 6 - time * 1.2) * 1.5;
+                    const waveY = Math.cos(t * 10 + time) * 1;
+
+                    let x = centerX + (baseW + ridgeRipple) + waveX;
+                    let y = startY + (t * dropletHeight) + waveY;
+
+                    if (pointer.force > 0.01) {
+                        const dx = x - pointer.cx;
+                        const dy = y - pointer.cy;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const interactionRadius = 70;
+
+                        if (dist < interactionRadius) {
+                            const pushForce = Math.pow((interactionRadius - dist) / interactionRadius, 2);
+                            const distortionAmount = pushForce * 30 * pointer.force;
+                            x += (dx / dist) * distortionAmount;
+                            y += (dy / dist) * distortionAmount;
+                        }
+                    }
+
+                    if (t === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                
+                for (let t = 1; t >= 0; t -= 0.02) {
+                    const baseW = getDropletWidth(t) * maxDropletWidth * u;
+                    const ridgeRipple = Math.sin(t * 60 + u * 12) * 1.5;
+                    const waveX = Math.sin(t * 6 - time * 1.2) * 1.5;
+                    const waveY = Math.cos(t * 10 + time) * 1;
+
+                    let x = centerX - (baseW + ridgeRipple) + waveX;
+                    let y = startY + (t * dropletHeight) + waveY;
+
+                    if (pointer.force > 0.01) {
+                        const dx = x - pointer.cx;
+                        const dy = y - pointer.cy;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const interactionRadius = 70;
+
+                        if (dist < interactionRadius) {
+                            const pushForce = Math.pow((interactionRadius - dist) / interactionRadius, 2);
+                            const distortionAmount = pushForce * 30 * pointer.force;
+                            x += (dx / dist) * distortionAmount;
+                            y += (dy / dist) * distortionAmount;
+                        }
+                    }
+
+                    ctx.lineTo(x, y);
+                }
+                
+                ctx.stroke();
+            }
+
+            time += 0.02;
+            requestAnimationFrame(drawFingerprint);
+        }
+
+        drawFingerprint();
+    </script>
+</body>
+</html>
